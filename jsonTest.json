@@ -1,14 +1,15 @@
 {
-  "Sheild": {
-    "orginalFile": "modelAddress",
-    "albedo": "albedoAdress",
-    "normal": "normalAddress",
-    "specular": "specularAddress"
-  },
+  "Sheild": 
+  			{
+			    "orginalFile": "modelAddress",
+			    "albedo": "albedoAdress",
+			    "normal": "normalAddress",
+			    "specular": "specularAddress"
+ 			},
   "Sword": {
-    "originalFile": "modelAddress",
-    "albedo": "albedoAdress",
-    "normal": "normalAdress",
-    "specular": "specularAddress"
-  }
+			    "originalFile": "modelAddress",
+			    "albedo": "albedoAdress",
+			    "normal": "normalAdress",
+			    "specular": "specularAddress"
+  			}
 }
