@@ -26,8 +26,9 @@ class JSONView(QtWidgets.QMainWindow):
 			with open (jsonFile) as jsonData:
 				d = json.load(jsonData)
 
-		path, filename = os.path.split(jsonFile)
-
+		filename = os.path.splitext(jsonFile)[0]
+		filename = os.path.basename(filename)
+		print(filename);
 		self.fillWidget(d, filename)
 
 	# Fills single cell in table
