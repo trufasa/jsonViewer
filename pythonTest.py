@@ -17,19 +17,21 @@ class JSONView(QtWidgets.QMainWindow):
 
 		self.ui.loadPushButton.clicked.connect(self.loadJSON)
 
-
+	# loadPushButton command opens file dialog and fills table
 	def loadJSON(self):
 		fDialog = tkinter.Tk()
 		jsonFile = filedialog.askopenfilename()
 		fDialog.destroy()
 
-		with open (jsonFile) as jsonData:
-			d = json.load(jsonData)
+		if(jsonFile):
+			with open (jsonFile) as jsonData:
+				d = json.load(jsonData)
 
 		path, filename = os.path.split(jsonFile)
 
 		self.fillWidget(d, filename)
 
+	# Fills single cell in table
 	def fillItem(self, item, value):
 		item.setExpanded(True)
 		if type(value) is dict:
@@ -59,6 +61,7 @@ class JSONView(QtWidgets.QMainWindow):
 			child.setFlags(child.flags() | QtCore.Qt.ItemIsEditable)
 			item.addChild(child)
 
+	# Fills entire table
 	def fillWidget(self, value, title):
 		self.treeWidget.clear()
 		self.treeWidget.setHeaderLabel(title)
