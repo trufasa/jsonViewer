@@ -19,9 +19,8 @@ class JSONView(QtWidgets.QMainWindow):
 
 	# loadPushButton command opens file dialog and fills table
 	def loadJSON(self):
-		fDialog = tkinter.Tk()
+		fDialog = tkinter.Tk().withdraw()
 		jsonFile = filedialog.askopenfilename()
-		fDialog.destroy()
 
 		if(jsonFile):
 			with open (jsonFile) as jsonData:
