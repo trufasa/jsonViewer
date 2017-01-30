@@ -13,10 +13,21 @@ from PyQt5 import QtCore, QtWidgets, QtGui
 
 
 class JSONWidget(QtWidgets.QWidget):
-	def __init__(self, parent=None):
-		QtWidgets.QWidget.__init__(self, parent)
+    def __init__(self, parent=None):
+        QtWidgets.QWidget.__init__(self, parent)
 
-		self.ui = uic.loadUi("testUI.ui")
+        self.ui = uic.loadUi("viewUI.ui")
+        self.ui.loadPushButton.clicked.connect(self.loadJSON)
+
+    def loadJSON(self):
+        fDialog = tkinter.Tk().withdraw()
+        jsonFile = filedialog.askopenfilename(filetypes=[("JSON Files","*.json")])
+
+        if(jsonFile):
+            with open (jsonFile) as jsonData:
+                d = json.load(jsonData, object_pairs_hook = OrderedDict)
+
+        self.widget.setText(json.dumps(d, sort_keys=False, indent=2))
 
 class JSONView(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
@@ -45,17 +56,15 @@ class JSONView(QtWidgets.QMainWindow):
 
 
     def compareJSON(self, value):
-    	text1 = self.ui.json1TextEdit.toPlainText().splitlines()
-    	text2 = self.ui.json2TextEdit.toPlainText().splitlines()
-    	d = difflib.Differ()
-    	result = d.compare(text1, text2)
-    	self.ui.json2TextEdit.setText('\n'.join(result))
+        text1 = self.ui.json1TextEdit.toPlainText().splitlines()
+        text2 = self.ui.json2TextEdit.toPlainText().splitlines()
+        d = difflib.Differ()
+        result = d.compare(text1, text2)
+        self.ui.json2TextEdit.setText('\n'.join(result))
 
     def addWidget(self):
-    	widget = JSONWidget()
-    	self.ui.textHorizontalLayout.addWidget(widget)
-
-
+        widget = JSONWidget().ui
+        self.ui.textHorizontalLayout.addWidget(widget)
 
 
 app = QtWidgets.QApplication(sys.argv)
