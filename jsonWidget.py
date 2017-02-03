@@ -1,6 +1,7 @@
 import os
+import ast
 import json
-
+import difflib
 from collections import OrderedDict
 from fileDialog import openFile
 from PyQt5 import QtCore, QtWidgets, QtGui, uic
@@ -11,12 +12,12 @@ class JSONWidget(QtWidgets.QMainWindow):
         QtWidgets.QWidget.__init__(self, parent)
         self.ui = uic.loadUi("viewUI.ui", self)
         self.ui.loadPushButton.clicked.connect(self.loadJSON)
-        self.widget = self.ui.jsonTextEdit
         self.title = self.ui.titleLabel
-        self.jsonDict = []
         self.compareComboBox = self.ui.compareComboBox
+        self.compareComboBox.currentIndexChanged.connect(self.compareJSON)
+        self.currentJSON = ""
         self.parent = parent
-        self.compareArray = []
+        self.compareArray = [self.parent,]
 
     def loadJSON(self):
         jsonFile = openFile([("JSON Files","*.json")])
@@ -25,18 +26,44 @@ class JSONWidget(QtWidgets.QMainWindow):
 
         if(jsonFile):
             with open (jsonFile) as jsonData:
-                self.jsonDict = json.load(jsonData)#, object_pairs_hook = OrderedDict)
-
-        self.widget.setText(json.dumps(self.jsonDict, sort_keys=False, indent=2))
+                jsonDict = json.load(jsonData)
+        print(jsonDict)
+        print(ast.literal_eval(jsonDict))
+        self.fillWidget(json.loads(json.dump(ast.literal_eval(jsonDict))))
 
         for obj in self.compareArray:
             if(obj != self.parent):
                 obj.resetCompareBox()
 
-    def compareJSON(self):
-        self.jsonDict = difflib.Differ()
-        result = d.compare(text1, text2)
-        self.ui.json2TextEdit.setText('\n'.join(result))
+    # Fills single cell in table
+    def fillItem(self, item, value):
+        print(type(value))
+        if type(value) is dict:
+            for key, val in sorted(value.items()):
+                child = QtWidgets.QTreeWidgetItem()
+                child.setText(0, key)
+                item.addChild(child)
+                item.setExpanded(True)
+                child.setFlags(child.flags() | QtCore.Qt.ItemIsEditable)
+                self.fillItem(child, val)
+        elif type(value) is list:
+            item.setText(1, str(value))
+            item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
+        else:
+            item.setText(1, str(value))
+            item.setExpanded(False)
+            item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
+
+    # Fills entire table widget
+    def fillWidget(self, value):
+        self.ui.treeWidget.clear()
+        self.fillItem(self.ui.treeWidget.invisibleRootItem(), value)
+
+    def compareJSON(self, compareObjIndex):
+        diff = difflib.Differ()
+        #result = list(diff.compare(self.currentJSON.splitlines(),
+        #self.compareArray[compareObjIndex].currentJSON.splitlines()))
+        #self.widget.setText('\n'.join(result))
 
     def setTitle(self, title):
         self.title.setText(title)
@@ -51,5 +78,6 @@ class JSONWidget(QtWidgets.QMainWindow):
 
     def resetCompareBox(self):
         self.compareComboBox.clear()
+        self.compareComboBox.addItem("Compare to...")
         for compareChild in self.compareArray:
             self.compareComboBox.addItem(compareChild.title.text())
